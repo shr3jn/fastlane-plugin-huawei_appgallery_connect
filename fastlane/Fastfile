@@ -1,0 +1,8 @@
+lane :test do
+  huawei_appgallery_connect(
+    client_id: "<CLIENT_ID>",
+    client_secret: "<CLIENT_SECRET>",
+    app_id: "<APP_ID>",
+    apk_path: "<APK_PATH>"
+  )
+end
