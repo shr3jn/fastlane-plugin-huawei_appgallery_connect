@@ -15,7 +15,9 @@ module Fastlane
             Helper::HuaweiAppgalleryConnectHelper.update_appinfo(params[:client_id], token, params[:app_id], params[:privacy_policy_url])
           end
 
-          upload_app = Helper::HuaweiAppgalleryConnectHelper.upload_app(token, params[:client_id], params[:app_id], params[:apk_path])
+          apk_lang = params[:apk_lang] == nil ? 'en-GB' : params[:apk_lang]
+
+          upload_app = Helper::HuaweiAppgalleryConnectHelper.upload_app(token, params[:client_id], params[:app_id], params[:apk_path], apk_lang)
 
           if upload_app
             Helper::HuaweiAppgalleryConnectHelper.submit_app_for_review(token, params)
@@ -115,7 +117,13 @@ module Fastlane
                                        description: "Release time in UTC format for app release on a specific date. The format is yyyy-MM-dd'T'HH:mm:ssZZ)",
                                        optional: true,
                                        conflicting_options: [:phase_wise_release],
-                                       type: String)
+                                       type: String),
+
+          FastlaneCore::ConfigItem.new(key: :apk_lang,
+                                     env_name: "HUAWEI_APPGALLERY_CONNECT_APK_LANGUAGE",
+                                     description: "Language type. For details, please refer to https://developer.huawei.com/consumer/en/doc/development/AppGallery-connect-Guides/agcapi-reference-langtype",
+                                     optional: true,
+                                     type: String)
         ]
       end
 

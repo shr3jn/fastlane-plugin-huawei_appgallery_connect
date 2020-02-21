@@ -60,7 +60,7 @@ module Fastlane
       end
 
 
-      def self.upload_app(token, client_id, app_id, apk_path)
+      def self.upload_app(token, client_id, app_id, apk_path, apk_lang)
         UI.message("Fetching upload URL")
 
         uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url?appId=#{app_id}&suffix=apk")
@@ -121,7 +121,7 @@ module Fastlane
             request["client_id"] = client_id
             request["Authorization"] = "Bearer #{token}"
 
-            data = {fileType: 5, lang: "en-GB", files: [{
+            data = {fileType: 5, lang: apk_lang, files: [{
 
                 fileName: "release.apk",
                 fileDestUrl: result_json['result']['UploadFileRsp']['fileInfoList'][0]['fileDestUlr'],
