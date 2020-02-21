@@ -9,7 +9,7 @@ lane :test do
     # Optional, Parameter beyond this are optional
     privacy_policy_url: "https://example.com",
     changelog_path: "<PATH_TO_CHANGELOG_FILE>",
-    apk_lang: "en-GB",
+    apk_lang: "en-US",
 
     # release time to release app on specific date
     release_time: "2019-12-25T07:05:15+0000",
