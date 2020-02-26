@@ -15,9 +15,7 @@ module Fastlane
             Helper::HuaweiAppgalleryConnectHelper.update_appinfo(params[:client_id], token, params[:app_id], params[:privacy_policy_url])
           end
 
-          apk_lang = params[:apk_lang] == nil ? 'en-US' : params[:apk_lang]
-
-          upload_app = Helper::HuaweiAppgalleryConnectHelper.upload_app(token, params[:client_id], params[:app_id], params[:apk_path], apk_lang)
+          upload_app = Helper::HuaweiAppgalleryConnectHelper.upload_app(token, params[:client_id], params[:app_id], params[:apk_path])
 
           if upload_app
             Helper::HuaweiAppgalleryConnectHelper.submit_app_for_review(token, params)
