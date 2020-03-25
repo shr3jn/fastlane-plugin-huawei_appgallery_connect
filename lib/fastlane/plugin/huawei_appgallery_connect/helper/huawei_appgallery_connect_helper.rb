@@ -32,7 +32,15 @@ module Fastlane
         request["Authorization"] = "Bearer #{token}"
         response = http.request(request)
 
-        result_json = JSON.parse(res.body)
+        result_json = JSON.parse(response.body)
+
+        if result_json['ret']['code'] == 0
+          UI.success("Successfully getting app info")
+          return result_json['appInfo']
+        else
+          UI.user_error!("Failed to get app info")
+        end
+
       end
 
       def self.update_appinfo(client_id, token, app_id, privacy_policy_url)
