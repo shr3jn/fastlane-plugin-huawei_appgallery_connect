@@ -81,7 +81,7 @@ module Fastlane
 
         response = http.request(request)
 
-        if response.code != 200
+        if !response.kind_of? Net::HTTPSuccess
           UI.user_error!("Cannot obtain upload url, please check API Token / Permissions (status code: #{response.code})")
           return false
         end
