@@ -81,6 +81,11 @@ module Fastlane
 
         response = http.request(request)
 
+        if !response.kind_of? Net::HTTPSuccess
+          UI.user_error!("Cannot obtain upload url, please check API Token / Permissions (status code: #{response.code})")
+          return false
+        end
+
         result_json = JSON.parse(response.body)
 
         if result_json['uploadUrl'].nil?
