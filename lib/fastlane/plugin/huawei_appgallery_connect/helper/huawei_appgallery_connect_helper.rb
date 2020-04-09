@@ -100,24 +100,9 @@ module Fastlane
           http = Net::HTTP.new(uri.host, uri.port)
           http.use_ssl = true
           request = Net::HTTP::Post.new(uri)
-          request['Content-Type'] = "multipart/form-data, boundary=#{boundary}"
 
-          post_body = []
-          # add the auth code
-          post_body << "--#{boundary}\r\n"
-          post_body << "Content-Disposition: form-data; name=\"authCode\"\r\n\r\n"
-          post_body << result_json['authCode']
-          # add the file count
-          post_body << "\r\n--#{boundary}\r\n"
-          post_body << "Content-Disposition: form-data; name=\"fileCount\"\r\n\r\n"
-          post_body << "1"
-          # add the apk
-          post_body << "\r\n--#{boundary}\r\n"
-          post_body << "Content-Disposition: form-data; name=\"file\"; filename=\"release.apk\"\r\n"
-          post_body << "Content-Type: multipart/form-data\r\n\r\n"
-          post_body << File.read(apk_path).encode('utf-8')
-          post_body << "\r\n--#{boundary}--\r\n"
-          request.body = post_body.join
+          form_data = [['file', File.open(apk_path.to_s)],['authCode', result_json['authCode']],['fileCount', '1']]
+          request.set_form form_data, 'multipart/form-data'
 
           result = http.request(request)
           result_json = JSON.parse(result.body)
