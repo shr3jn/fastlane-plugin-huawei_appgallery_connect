@@ -17,7 +17,7 @@ module Fastlane
 
           upload_app = Helper::HuaweiAppgalleryConnectHelper.upload_app(token, params[:client_id], params[:app_id], params[:apk_path])
 
-          if upload_app
+          if upload_app && params[:submit_for_review] != false
             Helper::HuaweiAppgalleryConnectHelper.submit_app_for_review(token, params)
           end
         end
@@ -121,7 +121,13 @@ module Fastlane
                                      env_name: "HUAWEI_APPGALLERY_CONNECT_APK_LANGUAGE",
                                      description: "Language type. For details, please refer to https://developer.huawei.com/consumer/en/doc/development/AppGallery-connect-Guides/agcapi-reference-langtype",
                                      optional: true,
-                                     type: String)
+                                     type: String),
+
+          FastlaneCore::ConfigItem.new(key: :submit_for_review,
+                                     env_name: "HUAWEI_APPGALLERY_SUBMIT_FOR_REVIEW",
+                                     description: "Should submit the app for review. The default value is true. If set false will only upload the app, and you can submit for review from the console",
+                                     optional: true,
+                                     type: Boolean)
         ]
       end
 
