@@ -215,6 +215,11 @@ module Fastlane
 
         response = http.request(request)
 
+        if !response.kind_of? Net::HTTPSuccess
+          UI.user_error!("Cannot submit app for review (status code: #{response.code}, body: #{response.body})")
+          return false
+        end
+
         result_json = JSON.parse(response.body)
 
         if result_json['ret']['code'] == 0
