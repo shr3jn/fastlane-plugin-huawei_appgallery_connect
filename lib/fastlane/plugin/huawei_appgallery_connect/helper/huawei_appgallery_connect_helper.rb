@@ -41,6 +41,7 @@ module Fastlane
           UI.success("Successfully getting app info")
           return result_json['appInfo']
         else
+          UI.user_error!(result_json)
           UI.user_error!("Failed to get app info")
         end
 
@@ -69,6 +70,7 @@ module Fastlane
         if result_json['ret']['code'] == 0
           UI.success("Successfully updated app info")
         else
+          UI.user_error!(result_json)
           UI.user_error!("Failed to update app info")
         end
       end
@@ -225,7 +227,8 @@ module Fastlane
         if result_json['ret']['code'] == 0
             UI.success("Successfully submitted app for review")
         else
-          UI.user_error!("Failed to submit app for review")
+          UI.user_error!(result_json)
+          UI.user_error!("Failed to submit app for review.")
         end
 
       end
