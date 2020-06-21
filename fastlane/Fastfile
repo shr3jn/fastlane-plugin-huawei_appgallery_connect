@@ -7,6 +7,9 @@ lane :test do
 
 
     # Optional, Parameter beyond this are optional
+
+    submit_for_review: false,
+
     privacy_policy_url: "https://example.com",
     changelog_path: "<PATH_TO_CHANGELOG_FILE>",
 
