@@ -43,3 +43,36 @@ huawei_appgallery_connect(
     phase_release_description: "<DESCRIPTION>"
 }
 ```
+
+The following action can be used to submit the app for review if submit_for_review was set to false during the upload of apk
+
+```
+huawei_appgallery_connect_submit_for_review(
+    client_id: "<CLIENT_ID>",
+    client_secret: "<CLIENT_SECRET>",
+    app_id: "<APP_ID>",
+
+
+    # Optional, Parameter beyond this are optional
+
+    # release time to release app on specific date
+    release_time: "2019-12-25T07:05:15+0000",
+
+    # For phase wise release: set these parameters
+    phase_wise_release: true,
+    phase_release_start_time: "2019-12-25T07:05:15+0000",
+    phase_release_end_time: "2019-12-28T07:05:15+0000",
+    phase_release_percent: "10.00",
+    phase_release_description: "<DESCRIPTION>"
+)
+```
+You can also retreive app info by making use of the following action
+
+```
+huawei_appgallery_connect_get_app_info(
+    client_id: "<CLIENT_ID>",
+    client_secret: "<CLIENT_SECRET>",
+    app_id: "<APP_ID>"
+)
+
+```
