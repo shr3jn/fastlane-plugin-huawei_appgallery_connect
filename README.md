@@ -41,7 +41,7 @@ huawei_appgallery_connect(
     phase_release_end_time: "2019-12-28T07:05:15+0000",
     phase_release_percent: "10.00",
     phase_release_description: "<DESCRIPTION>"
-}
+)
 ```
 
 The following action can be used to submit the app for review if submit_for_review was set to false during the upload of apk
