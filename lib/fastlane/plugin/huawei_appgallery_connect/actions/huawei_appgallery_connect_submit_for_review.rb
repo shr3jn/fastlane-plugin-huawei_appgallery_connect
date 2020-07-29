@@ -3,7 +3,7 @@ require_relative '../helper/huawei_appgallery_connect_helper'
 
 module Fastlane
   module Actions
-    class HuaweiAppgalleryConnectAction < Action
+    class HuaweiAppgalleryConnectSubmitForReviewAction < Action
       def self.run(params)
         token = Helper::HuaweiAppgalleryConnectHelper.get_token(params[:client_id], params[:client_secret])
 
