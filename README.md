@@ -12,41 +12,34 @@ fastlane add_plugin huawei_appgallery_connect
 
 ## About huawei_appgallery_connect
 
-Huawei AppGallery Connect Plugin
+Huawei AppGallery Connect Plugin can be used to upload Android application on the Huawei App Gallery using fastlane.
 
-**Note to author:** Add a more detailed description about this plugin here. If your plugin contains multiple actions, make sure to mention them here.
+## Usage
 
-## Example
-
-Check out the [example `Fastfile`](fastlane/Fastfile) to see how to use this plugin. Try it by cloning the repo, running `fastlane install_plugins` and `bundle exec fastlane test`.
-
-**Note to author:** Please set up a sample project to make it easy for users to explore what your plugin does. Provide everything that is necessary to try out the plugin in this project (including a sample Xcode/Android project if necessary)
-
-## Run tests for this plugin
-
-To run both the tests, and code style validation, run
+To get started you will need the client id, client Secret & app ID which can be obtained from your Huawei AppGallery Connect account.
 
 ```
-rake
+huawei_appgallery_connect(
+    client_id: "<CLIENT_ID>",
+    client_secret: "<CLIENT_SECRET>",
+    app_id: "<APP_ID>",
+    apk_path: "<APK_PATH>"
+    
+    # Optional, Parameter beyond this are optional
+
+    submit_for_review: false,
+
+    privacy_policy_url: "https://example.com",
+    changelog_path: "<PATH_TO_CHANGELOG_FILE>",
+
+    # release time to release app on specific date
+    release_time: "2019-12-25T07:05:15+0000",
+
+    # For phase wise release: set these parameters
+    phase_wise_release: true,
+    phase_release_start_time: "2019-12-25T07:05:15+0000",
+    phase_release_end_time: "2019-12-28T07:05:15+0000",
+    phase_release_percent: "10.00",
+    phase_release_description: "<DESCRIPTION>"
+}
 ```
-
-To automatically fix many of the styling issues, use
-```
-rubocop -a
-```
-
-## Issues and Feedback
-
-For any other issues and feedback about this plugin, please submit it to this repository.
-
-## Troubleshooting
-
-If you have trouble using plugins, check out the [Plugins Troubleshooting](https://docs.fastlane.tools/plugins/plugins-troubleshooting/) guide.
-
-## Using _fastlane_ Plugins
-
-For more information about how the `fastlane` plugin system works, check out the [Plugins documentation](https://docs.fastlane.tools/plugins/create-plugin/).
-
-## About _fastlane_
-
-_fastlane_ is the easiest way to automate beta deployments and releases for your iOS and Android apps. To learn more, check out [fastlane.tools](https://fastlane.tools).
