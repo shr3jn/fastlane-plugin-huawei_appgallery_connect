@@ -88,6 +88,12 @@ module Fastlane
                                          description: "Release time in UTC format for app release on a specific date. The format is yyyy-MM-dd'T'HH:mm:ssZZ)",
                                          optional: true,
                                          conflicting_options: [:phase_wise_release],
+                                         type: String),
+          
+            FastlaneCore::ConfigItem.new(key: :changelog_path,
+                                         env_name: "HUAWEI_APPGALLERY_CONNECT_CHANGELOG_PATH",
+                                         description: "Path to Changelog file (Default empty)",
+                                         optional: true,
                                          type: String)
         ]
       end
