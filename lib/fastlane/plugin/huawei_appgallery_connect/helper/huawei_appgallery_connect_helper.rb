@@ -136,6 +136,7 @@ module Fastlane
             request = Net::HTTP::Put.new(uri.request_uri)
             request["client_id"] = client_id
             request["Authorization"] = "Bearer #{token}"
+            request['Content-Type'] = "application/json"
 
             data = {fileType: 5, files: [{
 
