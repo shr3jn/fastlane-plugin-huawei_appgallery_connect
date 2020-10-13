@@ -15,7 +15,7 @@ module Fastlane
             Helper::HuaweiAppgalleryConnectHelper.update_appinfo(params[:client_id], token, params[:app_id], params[:privacy_policy_url])
           end
 
-          upload_app = Helper::HuaweiAppgalleryConnectHelper.upload_app(token, params[:client_id], params[:app_id], params[:apk_path])
+          upload_app = Helper::HuaweiAppgalleryConnectHelper.upload_app(token, params[:client_id], params[:app_id], params[:apk_path], params[:is_aab])
 
           if upload_app && params[:submit_for_review] != false
             Helper::HuaweiAppgalleryConnectHelper.submit_app_for_review(token, params)
@@ -66,6 +66,12 @@ module Fastlane
                                        description: "Path to APK file for upload",
                                        optional: false,
                                        type: String),
+
+          FastlaneCore::ConfigItem.new(key: :is_aab,
+                                       env_name: "HUAWEI_APPGALLERY_CONNECT_IS_AAB",
+                                       description: "Specify this to be true if you're uploading aab instead of apk",
+                                       optional: true,
+                                       type: Boolean),
 
           FastlaneCore::ConfigItem.new(key: :changelog_path,
                                      env_name: "HUAWEI_APPGALLERY_CONNECT_CHANGELOG_PATH",

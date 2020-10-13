@@ -76,10 +76,16 @@ module Fastlane
       end
 
 
-      def self.upload_app(token, client_id, app_id, apk_path)
+      def self.upload_app(token, client_id, app_id, apk_path, is_aab)
         UI.message("Fetching upload URL")
 
-        uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url?appId=#{app_id}&suffix=apk")
+        if(is_aab)
+          uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url?appId=#{app_id}&suffix=aab")
+          upload_filename = "release.aab"
+        else
+          uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url?appId=#{app_id}&suffix=aab")
+          upload_filename = "release.apk"
+        end
 
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = true
@@ -133,7 +139,7 @@ module Fastlane
 
             data = {fileType: 5, files: [{
 
-                fileName: "release.apk",
+                fileName: upload_filename,
                 fileDestUrl: result_json['result']['UploadFileRsp']['fileInfoList'][0]['fileDestUlr'],
                 size: result_json['result']['UploadFileRsp']['fileInfoList'][0]['size'].to_s
 
