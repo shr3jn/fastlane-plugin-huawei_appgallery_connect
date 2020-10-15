@@ -27,6 +27,9 @@ huawei_appgallery_connect(
     
     # Optional, Parameter beyond this are optional
 
+    # if you're uploading aab instead of apk, specify is_aab to true and specify path to aab file on apk_path
+    is_aab: true 
+    
     submit_for_review: false,
 
     privacy_policy_url: "https://example.com",
