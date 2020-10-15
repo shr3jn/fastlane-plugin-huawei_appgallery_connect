@@ -233,6 +233,11 @@ module Fastlane
 
         if result_json['ret']['code'] == 0
             UI.success("Successfully submitted app for review")
+        elsif result_json['ret']['code'] == 204144660 && result_json['ret']['msg'].include?("It may take 2-5 minutes")
+          UI.important(result_json)
+          UI.important("Build is currently processing, waiting for 2 minutes before submitting again...")
+          sleep(120)
+          self.submit_app_for_review(token, params)
         else
           UI.user_error!(result_json)
           UI.user_error!("Failed to submit app for review.")
