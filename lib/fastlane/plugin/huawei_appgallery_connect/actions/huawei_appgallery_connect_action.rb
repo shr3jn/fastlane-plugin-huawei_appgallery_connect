@@ -16,12 +16,27 @@ module Fastlane
           end
 
           upload_app = Helper::HuaweiAppgalleryConnectHelper.upload_app(token, params[:client_id], params[:app_id], params[:apk_path], params[:is_aab])
+          self.submit_for_review(token, upload_app, params)
 
-          if upload_app && params[:submit_for_review] != false
-            Helper::HuaweiAppgalleryConnectHelper.submit_app_for_review(token, params)
-          end
         end
         # Helper::HuaweiAppgalleryConnectHelper.getAppInfo(token, params[:client_id], params[:app_id])
+      end
+
+      def self.submit_for_review(token, upload_app, params)
+        if params[:is_aab] && upload_app["success"] == true && params[:submit_for_review] != false
+          compilationStatus = Helper::HuaweiAppgalleryConnectHelper.query_aab_compilation_status(token, params, upload_app["pkgVersion"])
+          if compilationStatus == 1
+            UI.important("aab file is currently processing, waiting for 2 minutes...")
+            sleep(10)
+            self.submit_for_review(token, upload_app, params)
+          elsif compilationStatus == 2
+            Helper::HuaweiAppgalleryConnectHelper.submit_app_for_review(token, params)
+          else
+            UI.user_error!("Compilation of aab failed")
+          end
+        elsif upload_app["success"] == true && params[:submit_for_review] != false
+          Helper::HuaweiAppgalleryConnectHelper.submit_app_for_review(token, params)
+        end
       end
 
       def self.description

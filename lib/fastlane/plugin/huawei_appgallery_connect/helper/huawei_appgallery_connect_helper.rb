@@ -79,6 +79,10 @@ module Fastlane
       def self.upload_app(token, client_id, app_id, apk_path, is_aab)
         UI.message("Fetching upload URL")
 
+        responseData = JSON.parse("{}")
+        responseData["success"] = false
+        responseData["code"] = 0
+
         if(is_aab)
           uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url?appId=#{app_id}&suffix=aab")
           upload_filename = "release.aab"
@@ -97,14 +101,16 @@ module Fastlane
 
         if !response.kind_of? Net::HTTPSuccess
           UI.user_error!("Cannot obtain upload url, please check API Token / Permissions (status code: #{response.code})")
-          return false
+          responseData["success"] = false
+          return responseData
         end
 
         result_json = JSON.parse(response.body)
 
         if result_json['uploadUrl'].nil?
           UI.user_error!('Cannot obtain upload url')
-          return false
+          responseData["success"] = false
+          return responseData
         else
           UI.important('Uploading app')
           # Upload App
@@ -121,7 +127,8 @@ module Fastlane
           result = http.request(request)
           if !result.kind_of? Net::HTTPSuccess
             UI.user_error!("Cannot upload app, please check API Token / Permissions (status code: #{result.code})")
-            return false
+            responseData["success"] = false
+            return responseData
           end
           result_json = JSON.parse(result.body)
 
@@ -150,21 +157,54 @@ module Fastlane
             response = http.request(request)
             if !response.kind_of? Net::HTTPSuccess
               UI.user_error!("Cannot save app info, please check API Token / Permissions (status code: #{response.code})")
-              return false
+              responseData["success"] = false
+              return responseData
             end
             result_json = JSON.parse(response.body)
 
             if result_json['ret']['code'] == 0
               UI.success("App information saved.")
-              return true
+              responseData["success"] = true
+              responseData["pkgVersion"] = result_json["pkgVersion"][0]
+              return responseData
             else
               UI.user_error!(result_json)
               UI.user_error!("Failed to save app information")
-              return false
+              responseData["success"] = false
+              return responseData
             end
           else
-            return false
+            responseData["success"] = false
+            return responseData
           end
+        end
+      end
+
+      def self.query_aab_compilation_status(token,params, pkgVersion)
+        UI.important("Checking aab compilation status")
+
+        uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/aab/complile/status?appId=#{params[:app_id]}&pkgVersion=#{pkgVersion}")
+
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
+        request = Net::HTTP::Get.new(uri.request_uri)
+        request["client_id"] = params[:client_id]
+        request["Authorization"] = "Bearer #{token}"
+
+        response = http.request(request)
+
+        if !response.kind_of? Net::HTTPSuccess
+          UI.user_error!("Cannot query compilation status (status code: #{response.code}, body: #{response.body})")
+          return false
+        end
+
+        result_json = JSON.parse(response.body)
+
+        if result_json['ret']['code'] == 0
+          return result_json['aabCompileStatus']
+        else
+          UI.user_error!(result_json)
+          return -999
         end
       end
 
