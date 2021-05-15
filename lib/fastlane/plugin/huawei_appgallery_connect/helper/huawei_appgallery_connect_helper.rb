@@ -57,6 +57,7 @@ module Fastlane
         request = Net::HTTP::Put.new(uri.request_uri)
         request["client_id"] = client_id
         request["Authorization"] = "Bearer #{token}"
+        request["Content-Type"] = "application/json"
 
         request.body = {privacyPolicy: privacy_policy_url}.to_json
 
@@ -96,6 +97,7 @@ module Fastlane
         request = Net::HTTP::Get.new(uri.request_uri)
         request["client_id"] = client_id
         request["Authorization"] = "Bearer #{token}"
+        request["Content-Type"] = "application/json"
 
         response = http.request(request)
 
@@ -143,7 +145,7 @@ module Fastlane
             request = Net::HTTP::Put.new(uri.request_uri)
             request["client_id"] = client_id
             request["Authorization"] = "Bearer #{token}"
-            request['Content-Type'] = "application/json"
+            request["Content-Type"] = "application/json"
 
             data = {fileType: 5, files: [{
 
@@ -251,6 +253,7 @@ module Fastlane
         request = Net::HTTP::Post.new(uri.request_uri)
         request["client_id"] = params[:client_id]
         request["Authorization"] = "Bearer #{token}"
+        request["Content-Type"] = "application/json"
 
         if params[:phase_wise_release] != nil && params[:phase_wise_release]
           request.body = {
@@ -287,4 +290,3 @@ module Fastlane
     end
   end
 end
-
