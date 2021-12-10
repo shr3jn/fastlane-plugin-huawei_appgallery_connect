@@ -264,7 +264,6 @@ module Fastlane
           }.to_json
         end
 
-
         response = http.request(request)
 
         if !response.kind_of? Net::HTTPSuccess

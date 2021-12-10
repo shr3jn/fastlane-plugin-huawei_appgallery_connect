@@ -16,6 +16,8 @@ module Fastlane
           end
 
           upload_app = Helper::HuaweiAppgalleryConnectHelper.upload_app(token, params[:client_id], params[:app_id], params[:apk_path], params[:is_aab])
+          UI.message("Waiting 10 seconds for upload to get processed...")
+          sleep(10)
           self.submit_for_review(token, upload_app, params)
 
         end
