@@ -16,8 +16,13 @@ module Fastlane
           end
 
           upload_app = Helper::HuaweiAppgalleryConnectHelper.upload_app(token, params[:client_id], params[:app_id], params[:apk_path], params[:is_aab])
-          UI.message("Waiting 10 seconds for upload to get processed...")
-          sleep(10)
+          if params[:delay_before_submit_for_review] == nil
+              UI.message("Waiting 10 seconds for upload to get processed...")
+              sleep(10)
+          else
+             UI.message("Waiting #{params[:delay_before_submit_for_review]} seconds for upload to get processed...")
+             sleep(params[:delay_before_submit_for_review])
+          end
           self.submit_for_review(token, upload_app, params)
 
         end
@@ -29,7 +34,7 @@ module Fastlane
           compilationStatus = Helper::HuaweiAppgalleryConnectHelper.query_aab_compilation_status(token, params, upload_app["pkgVersion"])
           if compilationStatus == 1
             UI.important("aab file is currently processing, waiting for 2 minutes...")
-            sleep(10)
+            sleep(120)
             self.submit_for_review(token, upload_app, params)
           elsif compilationStatus == 2
             Helper::HuaweiAppgalleryConnectHelper.submit_app_for_review(token, params)
@@ -150,7 +155,13 @@ module Fastlane
                                      env_name: "HUAWEI_APPGALLERY_SUBMIT_FOR_REVIEW",
                                      description: "Should submit the app for review. The default value is true. If set false will only upload the app, and you can submit for review from the console",
                                      optional: true,
-                                     type: Boolean)
+                                     type: Boolean),
+
+          FastlaneCore::ConfigItem.new(key: :delay_before_submit_for_review,
+                                       env_name: "HUAWEI_APPGALLERY_DELAY_BEFORE_REVIEW",
+                                       description: "Delay before submitting the app for review. Default is 10 seconds. Change this to a higher value if you are having issues submitting the app for review",
+                                       optional: true,
+                                       type: Integer)
         ]
       end
 
