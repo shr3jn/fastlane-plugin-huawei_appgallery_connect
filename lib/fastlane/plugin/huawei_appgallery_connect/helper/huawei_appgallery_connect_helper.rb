@@ -229,7 +229,7 @@ module Fastlane
         end
 
         if params[:release_time] != nil
-          params[:release_time] = CGI::encode(params[:release_time], /\W/)
+          params[:release_time] = Addressable::URI.encode(params[:release_time], /\W/)
           release_time = "&releaseTime=#{params[:release_time]}"
         end
 
@@ -242,7 +242,7 @@ module Fastlane
             UI.user_error!("Failed to submit app for review. Changelog file length is invalid")
             return
           else
-            changelog = "&remark=" + CGI::encode(changelog_data)
+            changelog = "&remark=" + Addressable::URI.encode(changelog_data)
           end
         end
 
