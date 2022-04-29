@@ -289,10 +289,10 @@ module Fastlane
 
       def self.update_app_localization_info(token, params)
         metadata_path = if !params[:metadata_path].nil?
-                           params[:metadata_path]
-                         else
-                           'fastlane/metadata/huawei'
-                         end
+                          params[:metadata_path]
+                        else
+                          'fastlane/metadata/huawei'
+                        end
 
         UI.important("Uploading app localization information from path: #{metadata_path}")
 
@@ -305,21 +305,31 @@ module Fastlane
           request['client_id'] = params[:client_id]
           request['Authorization'] = "Bearer #{token}"
           request['Content-Type'] = 'application/json'
-          body = {}
+          lang = File.basename(folder)
+          body = { "lang": lang }
 
           Dir.glob("#{folder}/*") do |file|
             case file
+            when /app_name/
+              body[:appName] = File.read(file)
+            when /app_description/
+              body[:appDesc] = File.read(file)
+            when /introduction/
+              body[:briefInfo] = File.read(file)
             when /release_notes/
               body[:newFeatures] = File.read(file)
             end
           end
 
           body.length.zero? && next
+          UI.important(body.to_json)
           request.body = body.to_json
           response = http.request(request)
 
+          UI.important(response)
+
           unless response.is_a? Net::HTTPSuccess
-            UI.user_error!("Cannot submit app for review (status code: #{response.code}, body: #{response.body})")
+            UI.user_error!("Cannot upload localization info (status code: #{response.code}, body: #{response.body})")
             return false
           end
 
