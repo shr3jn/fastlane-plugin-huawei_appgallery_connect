@@ -185,7 +185,7 @@ module Fastlane
       def self.query_aab_compilation_status(token,params, pkgVersion)
         UI.important("Checking aab compilation status")
 
-        uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/aab/complile/status?appId=#{params[:app_id]}&pkgVersion=#{pkgVersion}")
+        uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/aab/complile/status?appId=#{params[:app_id]}&pkgIds=#{params[:package_ids]}&pkgVersion=#{pkgVersion}")
 
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = true
