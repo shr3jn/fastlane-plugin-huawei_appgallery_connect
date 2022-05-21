@@ -23,15 +23,18 @@ huawei_appgallery_connect(
     client_id: "<CLIENT_ID>",
     client_secret: "<CLIENT_SECRET>",
     app_id: "<APP_ID>",
-    apk_path: "<APK_PATH>"
+    apk_path: "<APK_PATH>",
     
     # Optional, Parameter beyond this are optional
     
     # If you are facing errors when submitting for review, increase the delay time before submitting the app for review using this option:
-    delay_before_submit_for_review: 20
+    delay_before_submit_for_review: 20,
 
     # if you're uploading aab instead of apk, specify is_aab to true and specify path to aab file on apk_path
-    is_aab: true 
+    is_aab: true, 
+    
+    # package id should be defined if you are submitting app for review
+    package_ids: "com.example.app",
     
     submit_for_review: false,
 
