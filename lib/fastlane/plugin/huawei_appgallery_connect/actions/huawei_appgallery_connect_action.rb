@@ -165,7 +165,7 @@ module Fastlane
 
            FastlaneCore::ConfigItem.new(key: :package_ids,
                                                   env_name: "HUAWEI_APPGALLERY_PACKAGE_IDS",
-                                                  description: "App Package IDs separated by commas.",
+                                                  description: "App Package IDs separated by commas",
                                                   optional: true,
                                                   type: String)
         ]
