@@ -184,7 +184,6 @@ module Fastlane
 
       def self.query_aab_compilation_status(token,params, pkgVersion)
         UI.important("Checking aab compilation status")
-
         uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/aab/complile/status?appId=#{params[:app_id]}&pkgIds=#{pkgVersion}")
 
         http = Net::HTTP.new(uri.host, uri.port)
@@ -203,7 +202,7 @@ module Fastlane
         result_json = JSON.parse(response.body)
 
         if result_json['ret']['code'] == 0
-          return result_json['aabCompileStatus']
+          return result_json['pkgStateList'][0]['aabCompileStatus']
         else
           UI.user_error!(result_json)
           return -999
