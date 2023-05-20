@@ -1,4 +1,5 @@
 require 'fastlane_core/ui/ui'
+require 'CGI'
 
 module Fastlane
   UI = FastlaneCore::UI unless Fastlane.const_defined?("UI")
@@ -228,7 +229,7 @@ module Fastlane
         end
 
         if params[:release_time] != nil
-          params[:release_time] = Addressable::URI.encode(params[:release_time], /\W/)
+          params[:release_time] = CGI.escape(params[:release_time])
           release_time = "&releaseTime=#{params[:release_time]}"
         end
 
@@ -241,7 +242,7 @@ module Fastlane
             UI.user_error!("Failed to submit app for review. Changelog file length is invalid")
             return
           else
-            changelog = "&remark=" + Addressable::URI.encode(changelog_data)
+            changelog = "&remark=" + CGI.escape(changelog_data)
           end
         end
 
