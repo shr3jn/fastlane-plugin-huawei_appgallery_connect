@@ -58,7 +58,6 @@ huawei_appgallery_connect_submit_for_review(
     client_secret: "<CLIENT_SECRET>",
     app_id: "<APP_ID>",
 
-
     # Optional, Parameter beyond this are optional
 
     # release time to release app on specific date
@@ -80,5 +79,34 @@ huawei_appgallery_connect_get_app_info(
     client_secret: "<CLIENT_SECRET>",
     app_id: "<APP_ID>"
 )
+```
+
+To update the app's metadata like release notes, app name, brief info and app description you can make use of the following action
 
 ```
+huawei_appgallery_connect_update_app_localization(
+    client_id: "<CLIENT_ID>",
+    client_secret: "<CLIENT_SECRET>",
+    app_id: "<APP_ID>",
+    metadata_path: "<METADATA PATH>" # defaults to fastlane/metadata/huawei
+)
+```
+
+Your folder structure for applying multiple languages for the metadata should look like this:
+
+```
+└── fastlane
+    └── metadata
+        └── huawei
+            ├── en-US
+            │   ├── app_name.txt
+            │   └── app_description.txt
+            │   └── introduction.txt
+            │   └── release_notes.txt
+            └── fr-FR
+                ├── app_name.txt
+                └── app_description.txt
+                └── introduction.txt
+                └── release_notes.txt
+```
+
