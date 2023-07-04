@@ -21,6 +21,33 @@ module Fastlane
         return result_json['access_token']
       end
 
+      def self.get_app_id(token, client_id, package_id)
+        UI.message("Fetching App ID")
+
+        uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/appid-list?packageName=#{package_id}")
+
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
+        request = Net::HTTP::Get.new(uri.request_uri)
+        request["client_id"] = client_id
+        request["Authorization"] = "Bearer #{token}"
+        response = http.request(request)
+        if !response.kind_of? Net::HTTPSuccess
+          UI.user_error!("Cannot obtain app id, please check API Token / Permissions (status code: #{response.code})")
+          return false
+        end
+        result_json = JSON.parse(response.body)
+
+        if result_json['ret']['code'] == 0
+          UI.success("Successfully getting app id")
+          return result_json['appids'][0]['value']
+        else
+          UI.user_error!(result_json)
+          UI.user_error!("Failed to get app id")
+        end
+
+      end
+
       def self.get_app_info(token, client_id, app_id)
         UI.message("Fetching App Info")
 
