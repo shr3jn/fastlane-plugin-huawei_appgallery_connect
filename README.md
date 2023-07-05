@@ -16,7 +16,7 @@ Huawei AppGallery Connect Plugin can be used to upload Android application on th
 
 ## Usage
 
-To get started you will need the client id, client Secret & app ID which can be obtained from your Huawei AppGallery Connect account.
+To get started you will need the client id, client Secret & app ID which can be obtained from your Huawei AppGallery Connect account OR can be obtained with huawei_appgallery_connect_get_app_id action (please see example below).
 
 ```
 huawei_appgallery_connect(
@@ -47,6 +47,16 @@ huawei_appgallery_connect(
     phase_release_end_time: "2019-12-28T07:05:15+0000",
     phase_release_percent: "10.00",
     phase_release_description: "<DESCRIPTION>"
+)
+```
+
+You can retreive app id by making use of the following action
+
+```
+huawei_appgallery_connect_get_app_id(
+    client_id: "<CLIENT_ID>",
+    client_secret: "<CLIENT_SECRET>",
+    package_id: "<PACKAGE_ID>"
 )
 ```
 
