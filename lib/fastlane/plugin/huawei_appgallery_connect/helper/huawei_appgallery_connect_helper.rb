@@ -369,6 +369,36 @@ module Fastlane
           end
         end
       end
+
+      def self.set_gms_dependency(token, client_id, app_id, gms_dependency)
+        UI.message("Setting GMS Dependency")
+
+        uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/properties/gms?appId=#{app_id}")
+
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
+        request = Net::HTTP::Put.new(uri.request_uri)
+        request["client_id"] = client_id
+        request["Authorization"] = "Bearer #{token}"
+        request["Content-Type"] = "application/json"
+
+        request.body = {needGms: gms_dependency}.to_json
+
+        response = http.request(request)
+        if !response.kind_of? Net::HTTPSuccess
+          UI.user_error!("Cannot update gms dependency, please check API Token / Permissions (status code: #{response.code})")
+          return false
+        end
+        result_json = JSON.parse(response.body)
+
+        if result_json['ret']['code'] == 0
+          UI.success("Successfully updated GMS Dependency")
+        else
+          UI.user_error!(result_json)
+          UI.user_error!("Failed to update GMS Dependency")
+        end
+      end
+
     end
   end
 end
