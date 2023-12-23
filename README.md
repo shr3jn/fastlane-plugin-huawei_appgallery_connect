@@ -102,6 +102,17 @@ huawei_appgallery_connect_update_app_localization(
 )
 ```
 
+To update the GMS dependency of the app, use the following action
+
+```
+huawei_appgallery_connect_update_app_localization(
+    client_id: "<CLIENT_ID>",
+    client_secret: "<CLIENT_SECRET>",
+    app_id: "<APP_ID>",
+    gms_dependency: 1 #Indicates whether an app depends on GMS. 1: Yes, 0: No
+)
+```
+
 Your folder structure for applying multiple languages for the metadata should look like this:
 
 ```
