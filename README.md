@@ -105,7 +105,7 @@ huawei_appgallery_connect_update_app_localization(
 To update the GMS dependency of the app, use the following action
 
 ```
-huawei_appgallery_connect_update_app_localization(
+huawei_appgallery_connect_set_gms_dependency(
     client_id: "<CLIENT_ID>",
     client_secret: "<CLIENT_SECRET>",
     app_id: "<APP_ID>",
