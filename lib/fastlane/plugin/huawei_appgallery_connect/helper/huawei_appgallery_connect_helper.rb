@@ -112,12 +112,14 @@ module Fastlane
         responseData["success"] = false
         responseData["code"] = 0
 
+        content_length = File.size(apk_path)
+        
         if(is_aab)
-          uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url?appId=#{app_id}&suffix=aab")
           upload_filename = "release.aab"
+          uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url/for-obs?appId=#{app_id}&fileName=#{upload_filename}&contentLength=#{content_length}")
         else
-          uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url?appId=#{app_id}&suffix=apk")
           upload_filename = "release.apk"
+          uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url/for-obs?appId=#{app_id}&fileName=#{upload_filename}&contentLength=#{content_length}")
         end
 
         http = Net::HTTP.new(uri.host, uri.port)
