@@ -107,39 +107,37 @@ module Fastlane
 
       def self.upload_app(token, client_id, app_id, apk_path, is_aab)
         UI.message("Fetching upload URL")
-      
+
         responseData = JSON.parse("{}")
         responseData["success"] = false
         responseData["code"] = 0
-      
-        content_length = File.size(apk_path)
-        
+
         if(is_aab)
+          uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url?appId=#{app_id}&suffix=aab")
           upload_filename = "release.aab"
         else
+          uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url?appId=#{app_id}&suffix=apk")
           upload_filename = "release.apk"
         end
-      
-        uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url/for-obs?appId=#{app_id}&fileName=#{upload_filename}&contentLength=#{content_length}")
-      
+
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = true
         request = Net::HTTP::Get.new(uri.request_uri)
         request["client_id"] = client_id
         request["Authorization"] = "Bearer #{token}"
         request["Content-Type"] = "application/json"
-      
+
         response = http.request(request)
-      
+
         if !response.kind_of? Net::HTTPSuccess
           UI.user_error!("Cannot obtain upload url, please check API Token / Permissions (status code: #{response.code})")
           responseData["success"] = false
           return responseData
         end
-      
+
         result_json = JSON.parse(response.body)
-      
-        if result_json['urlInfo'].nil? || result_json['urlInfo']['url'].nil?
+
+        if result_json['uploadUrl'].nil?
           UI.user_error!('Cannot obtain upload url')
           responseData["success"] = false
           return responseData
@@ -151,16 +149,7 @@ module Fastlane
           # uri = URI("http://localhost/dashboard/test")
           http = Net::HTTP.new(uri.host, uri.port)
           http.use_ssl = true
-          request_method = result_json['urlInfo']['method']
-          if request_method == 'POST'
-            request = Net::HTTP::Post.new(uri)
-          else
-            request = Net::HTTP::Put.new(uri)
-          end
-          
-          result_json['urlInfo']['headers'].each do |key, value|
-            request[key] = value
-          end
+          request = Net::HTTP::Post.new(uri)
 
           form_data = [['file', File.open(apk_path.to_s)],['authCode', result_json['authCode']],['fileCount', '1']]
           request.set_form form_data, 'multipart/form-data'
@@ -189,7 +178,7 @@ module Fastlane
             data = {fileType: 5, files: [{
 
                 fileName: upload_filename,
-                fileDestUrl: result_json['result']['UploadFileRsp']['fileInfoList'][0]['fileDestUlr'],
+                fileDestUrl: result_json['result']['UploadFileRsp']['fileInfoList'][0]['fileDestUrl'],
                 size: result_json['result']['UploadFileRsp']['fileInfoList'][0]['size'].to_s
 
             }] }.to_json
