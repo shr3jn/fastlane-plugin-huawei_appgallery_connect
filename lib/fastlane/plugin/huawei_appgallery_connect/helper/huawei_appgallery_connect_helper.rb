@@ -112,11 +112,14 @@ module Fastlane
         responseData["success"] = false
         responseData["code"] = 0
 
+        file_size_in_bytes = File.size(apk_path.to_s)
+        sha256 = Digest::SHA256.file(apk_path).hexdigest
+
         if(is_aab)
-          uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url?appId=#{app_id}&suffix=aab")
+          uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url/for-obs?appId=#{app_id}&fileName=release.aab&contentLength=#{file_size_in_bytes}&suffix=aab")
           upload_filename = "release.aab"
         else
-          uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url?appId=#{app_id}&suffix=apk")
+          uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url/for-obs?appId=#{app_id}&fileName=release.apk&contentLength=#{file_size_in_bytes}&suffix=apk")
           upload_filename = "release.apk"
         end
 
@@ -137,32 +140,40 @@ module Fastlane
 
         result_json = JSON.parse(response.body)
 
-        if result_json['uploadUrl'].nil?
-          UI.user_error!('Cannot obtain upload url')
+        if result_json['urlInfo']['url'].nil?
+          UI.message('Cannot obtain upload url')
+          UI.user_error!(response.body)
+
           responseData["success"] = false
           return responseData
         else
           UI.important('Uploading app')
           # Upload App
           boundary = "755754302457647"
-          uri = URI(result_json['uploadUrl'])
+          uri = URI(result_json['urlInfo']['url'])
           # uri = URI("http://localhost/dashboard/test")
           http = Net::HTTP.new(uri.host, uri.port)
           http.use_ssl = true
-          request = Net::HTTP::Post.new(uri)
+          request = Net::HTTP::Put.new(uri)
+          request["Authorization"] = result_json['urlInfo']['headers']['Authorization']
+          request["Content-Type"] = result_json['urlInfo']['headers']['Content-Type']
+          request["user-agent"] = result_json['urlInfo']['headers']['user-agent']
+          request["Host"] = result_json['urlInfo']['headers']['Host']
+          request["x-amz-date"] = result_json['urlInfo']['headers']['x-amz-date']
+          request["x-amz-content-sha256"] = result_json['urlInfo']['headers']['x-amz-content-sha256']
 
-          form_data = [['file', File.open(apk_path.to_s)],['authCode', result_json['authCode']],['fileCount', '1']]
-          request.set_form form_data, 'multipart/form-data'
+          request.body = File.read(apk_path.to_s)
+          request.content_type = 'application/octet-stream'
 
           result = http.request(request)
           if !result.kind_of? Net::HTTPSuccess
+            UI.user_error!(result.body)
             UI.user_error!("Cannot upload app, please check API Token / Permissions (status code: #{result.code})")
             responseData["success"] = false
             return responseData
           end
-          result_json = JSON.parse(result.body)
 
-          if result_json['result']['result_code'].to_i == 0
+          if result.code.to_i == 200
             UI.success('Upload app to AppGallery Connect successful')
             UI.important("Saving app information")
 
@@ -178,8 +189,8 @@ module Fastlane
             data = {fileType: 5, files: [{
 
                 fileName: upload_filename,
-                fileDestUrl: result_json['result']['UploadFileRsp']['fileInfoList'][0]['fileDestUlr'],
-                size: result_json['result']['UploadFileRsp']['fileInfoList'][0]['size'].to_s
+                fileDestUrl: result_json['urlInfo']['objectId']
+                # size: result_json['result']['UploadFileRsp']['fileInfoList'][0]['size'].to_s
 
             }] }.to_json
 
