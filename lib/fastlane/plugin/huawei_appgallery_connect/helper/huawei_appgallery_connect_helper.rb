@@ -107,39 +107,39 @@ module Fastlane
 
       def self.upload_app(token, client_id, app_id, apk_path, is_aab)
         UI.message("Fetching upload URL")
-
+      
         responseData = JSON.parse("{}")
         responseData["success"] = false
         responseData["code"] = 0
-
+      
         content_length = File.size(apk_path)
         
         if(is_aab)
           upload_filename = "release.aab"
-          uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url/for-obs?appId=#{app_id}&fileName=#{upload_filename}&contentLength=#{content_length}")
         else
           upload_filename = "release.apk"
-          uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url/for-obs?appId=#{app_id}&fileName=#{upload_filename}&contentLength=#{content_length}")
         end
-
+      
+        uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url/for-obs?appId=#{app_id}&fileName=#{upload_filename}&contentLength=#{content_length}")
+      
         http = Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = true
         request = Net::HTTP::Get.new(uri.request_uri)
         request["client_id"] = client_id
         request["Authorization"] = "Bearer #{token}"
         request["Content-Type"] = "application/json"
-
+      
         response = http.request(request)
-
+      
         if !response.kind_of? Net::HTTPSuccess
           UI.user_error!("Cannot obtain upload url, please check API Token / Permissions (status code: #{response.code})")
           responseData["success"] = false
           return responseData
         end
-
+      
         result_json = JSON.parse(response.body)
-
-        if result_json['uploadUrl'].nil?
+      
+        if result_json['urlInfo'].nil? || result_json['urlInfo']['url'].nil?
           UI.user_error!('Cannot obtain upload url')
           responseData["success"] = false
           return responseData
