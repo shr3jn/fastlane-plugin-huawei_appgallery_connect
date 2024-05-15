@@ -151,7 +151,16 @@ module Fastlane
           # uri = URI("http://localhost/dashboard/test")
           http = Net::HTTP.new(uri.host, uri.port)
           http.use_ssl = true
-          request = Net::HTTP::Post.new(uri)
+          request_method = result_json['urlInfo']['method']
+          if request_method == 'POST'
+            request = Net::HTTP::Post.new(uri)
+          else
+            request = Net::HTTP::Put.new(uri)
+          end
+          
+          result_json['urlInfo']['headers'].each do |key, value|
+            request[key] = value
+          end
 
           form_data = [['file', File.open(apk_path.to_s)],['authCode', result_json['authCode']],['fileCount', '1']]
           request.set_form form_data, 'multipart/form-data'
