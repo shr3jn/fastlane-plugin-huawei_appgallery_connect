@@ -140,7 +140,7 @@ module Fastlane
 
         result_json = JSON.parse(response.body)
 
-        if result_json['urlInfo']['url'].nil?
+        if result_json.nil? || result_json['urlInfo'].nil? || result_json['urlInfo']['url'].nil?
           UI.message('Cannot obtain upload url')
           UI.user_error!(response.body)
 
