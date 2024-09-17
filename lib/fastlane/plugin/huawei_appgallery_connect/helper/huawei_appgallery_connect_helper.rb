@@ -276,7 +276,7 @@ module Fastlane
         if params[:changelog_path] != nil
           changelog_data = File.read(params[:changelog_path])
 
-          if changelog_data.length < 3 || changelog_data.length > 300
+          if changelog_data.length < 3 || changelog_data.length > 500
             UI.user_error!("Failed to submit app for review. Changelog file length is invalid")
             return
           else
