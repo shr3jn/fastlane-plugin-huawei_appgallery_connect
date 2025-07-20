@@ -356,7 +356,10 @@ module Fastlane
           testStartTime: start_time.strftime('%Y-%m-%dT%H:%M:%S+0000'),
           testEndTime: end_time.strftime('%Y-%m-%dT%H:%M:%S+0000'),
           skipManualReview: params[:skip_manual_review] != false,
-          feedbackEmail: params[:feedback_email]
+          feedbackEmail: params[:feedback_email],
+          releaseType: 1, # Force open testing release type
+          testPhase: true, # Explicitly set test phase
+          testMode: 1 # Set test mode to open testing
         }
       end
 
