@@ -1,5 +1,6 @@
 require 'fastlane_core/ui/ui'
 require 'cgi'
+require 'time'
 
 module Fastlane
   UI = FastlaneCore::UI unless Fastlane.const_defined?("UI")
@@ -253,14 +254,20 @@ module Fastlane
 
         release_type = ''
         release_time = ''
+        test_config = {}
 
-        if (params[:phase_wise_release] != nil && params[:phase_wise_release]) && (
+        # Handle open testing configuration
+        if params[:use_testing_version]
+          UI.important("Configuring open testing")
+          test_config = prepare_test_config(params)
+          release_type = '&releaseType=1' # Open testing release type
+        elsif (params[:phase_wise_release] != nil && params[:phase_wise_release]) && (
               params[:phase_release_start_time] == nil ||
               params[:phase_release_end_time] == nil ||
               params[:phase_release_percent] == nil ||
               params[:phase_release_description] == nil
         )
-          UI.user_error!("Submit for review failed. Phase wise release requires Start time, End time Release Percent & Descrption")
+          UI.user_error!("Submit for review failed. Phase wise release requires Start time, End time Release Percent & Description")
           return
         elsif params[:phase_wise_release] != nil && params[:phase_wise_release]
           release_type = '&releaseType=3'
@@ -300,6 +307,8 @@ module Fastlane
               phasedReleasePercent: params[:phase_release_percent],
               phasedReleaseDescription: params[:phase_release_description]
           }.to_json
+        elsif params[:use_testing_version]
+          request.body = test_config.to_json
         end
 
         response = http.request(request)
@@ -312,7 +321,7 @@ module Fastlane
         result_json = JSON.parse(response.body)
 
         if result_json['ret']['code'] == 0
-            UI.success("Successfully submitted app for review")
+          UI.success("Successfully submitted app for review")
         elsif result_json['ret']['code'] == 204144660 && result_json['ret']['msg'].include?("It may take 2-5 minutes")
           UI.important(result_json)
           UI.important("Build is currently processing, waiting for 2 minutes before submitting again...")
@@ -322,7 +331,29 @@ module Fastlane
           UI.user_error!(result_json)
           UI.user_error!("Failed to submit app for review.")
         end
+      end
 
+      def self.prepare_test_config(params)
+        # Calculate test start time (1 hour from now if not provided)
+        start_time = if params[:test_start_time]
+                      Time.parse(params[:test_start_time])
+                    else
+                      Time.now + (60 * 60) # 1 hour from now
+                    end
+
+        # Calculate test end time (80 days from start if not provided)
+        end_time = if params[:test_end_time]
+                    Time.parse(params[:test_end_time])
+                  else
+                    start_time + (80 * 24 * 60 * 60) # 80 days from start
+                  end
+
+        {
+          testStartTime: start_time.strftime('%Y-%m-%dT%H:%M:%S+0000'),
+          testEndTime: end_time.strftime('%Y-%m-%dT%H:%M:%S+0000'),
+          skipManualReview: params[:skip_manual_review] != false,
+          feedbackEmail: params[:feedback_email]
+        }
       end
 
       def self.update_app_localization_info(token, params)
