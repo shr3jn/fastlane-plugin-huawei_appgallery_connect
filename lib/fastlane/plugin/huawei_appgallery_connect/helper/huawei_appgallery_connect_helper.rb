@@ -308,8 +308,12 @@ module Fastlane
               phasedReleaseDescription: params[:phase_release_description]
           }.to_json
         elsif params[:use_testing_version]
+          test_config[:releaseType] = 1  # Explicitly set release type for open testing
           request.body = test_config.to_json
         end
+
+        UI.important("Request URL: #{uri.to_s}")
+        UI.important("Request Body: #{request.body}")
 
         response = http.request(request)
 
