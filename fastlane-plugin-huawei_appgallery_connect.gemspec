@@ -5,13 +5,13 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'fastlane/plugin/huawei_appgallery_connect/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'fastlane-plugin-huawei_appgallery_connect_v2'
+  spec.name          = 'fastlane-plugin-huawei_appgallery_connect'
   spec.version       = Fastlane::HuaweiAppgalleryConnect::VERSION
   spec.author        = 'Shreejan Shrestha'
   spec.email         = 'shr3jn@gmail.com'
 
   spec.summary       = 'Huawei AppGallery Connect Plugin'
-  spec.homepage      = "https://github.com/anokabb/fastlane-plugin-huawei_appgallery_connect"
+  spec.homepage      = "https://github.com/shr3jn/fastlane-plugin-huawei_appgallery_connect"
   spec.license       = "MIT"
 
   spec.files         = Dir["lib/**/*"] + %w(README.md LICENSE)
