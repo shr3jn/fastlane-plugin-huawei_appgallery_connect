@@ -10,7 +10,6 @@ module Fastlane
         if token.nil?
           UI.message("Cannot retrieve token, please check your client ID and client secret")
         else
-
           if params[:privacy_policy_url] != nil
             Helper::HuaweiAppgalleryConnectHelper.update_appinfo(params[:client_id], token, params[:app_id], params[:privacy_policy_url])
           end
@@ -24,9 +23,7 @@ module Fastlane
              sleep(params[:delay_before_submit_for_review])
           end
           self.submit_for_review(token, upload_app, params)
-
         end
-        # Helper::HuaweiAppgalleryConnectHelper.getAppInfo(token, params[:client_id], params[:app_id])
       end
 
       def self.submit_for_review(token, upload_app, params)
@@ -95,52 +92,52 @@ module Fastlane
                                        optional: true,
                                        type: Boolean),
 
-          FastlaneCore::ConfigItem.new(key: :changelog_path,
-                                     env_name: "HUAWEI_APPGALLERY_CONNECT_CHANGELOG_PATH",
-                                     description: "Path to Changelog file (Default empty)",
-                                     optional: true,
-                                     type: String),
-
           FastlaneCore::ConfigItem.new(key: :privacy_policy_url,
-                                     env_name: "HUAWEI_APPGALLERY_CONNECT_PRIVACY",
-                                     description: "Privacy Policy URL",
-                                     optional: true,
-                                     type: String),
+                                       env_name: "HUAWEI_APPGALLERY_CONNECT_PRIVACY_POLICY",
+                                       description: "Privacy Policy URL",
+                                       optional: true,
+                                       type: String),
+
+          FastlaneCore::ConfigItem.new(key: :changelog_path,
+                                       env_name: "HUAWEI_APPGALLERY_CONNECT_CHANGELOG_PATH",
+                                       description: "Path to Changelog file (Default empty)",
+                                       optional: true,
+                                       type: String),
 
           FastlaneCore::ConfigItem.new(key: :phase_wise_release,
-                                     env_name: "HUAWEI_APPGALLERY_CONNECT_PHASE_WISE_RELEASE",
-                                     description: "Phase wise release",
-                                     optional: true,
-                                     conflicting_options: [:release_time],
-                                     type: Boolean),
+                                       env_name: "HUAWEI_APPGALLERY_CONNECT_PHASE_WISE_RELEASE",
+                                       description: "Phase wise release",
+                                       optional: true,
+                                       conflicting_options: [:release_time],
+                                       type: Boolean),
 
           FastlaneCore::ConfigItem.new(key: :phase_release_start_time,
-                                     env_name: "HUAWEI_APPGALLERY_CONNECT_PHASE_WISE_RELEASE_START_TIME",
-                                     description: "Start time of the validity period of the release by phase. The value is UTC time in the following format: yyyy-MM-dd 'T' HH:mm:ssZZ",
-                                     optional: true,
-                                     type: String),
+                                       env_name: "HUAWEI_APPGALLERY_CONNECT_PHASE_RELEASE_START_TIME",
+                                       description: "Phase release start time in UTC format (yyyy-MM-dd'T'HH:mm:ssZZ)",
+                                       optional: true,
+                                       type: String),
 
           FastlaneCore::ConfigItem.new(key: :phase_release_end_time,
-                                     env_name: "HUAWEI_APPGALLERY_CONNECT_PHASE_WISE_RELEASE_END_TIME",
-                                     description: "End time of the validity period of the release by phase. The value is UTC time in the following format: yyyy-MM-dd 'T' HH:mm:ssZZ",
-                                     optional: true,
-                                     type: String),
+                                       env_name: "HUAWEI_APPGALLERY_CONNECT_PHASE_RELEASE_END_TIME",
+                                       description: "Phase release end time in UTC format (yyyy-MM-dd'T'HH:mm:ssZZ)",
+                                       optional: true,
+                                       type: String),
 
           FastlaneCore::ConfigItem.new(key: :phase_release_percent,
-                                     env_name: "HUAWEI_APPGALLERY_CONNECT_PHASE_WISE_RELEASE_PERCENT",
-                                     description: "Percentage of the release by phase. The value must be accurate to two decimal places and does not contain the percent sign (%)",
-                                     optional: true,
-                                     type: String),
+                                       env_name: "HUAWEI_APPGALLERY_CONNECT_PHASE_RELEASE_PERCENT",
+                                       description: "Percentage of phase release (0-100)",
+                                       optional: true,
+                                       type: String),
 
           FastlaneCore::ConfigItem.new(key: :phase_release_description,
-                                     env_name: "HUAWEI_APPGALLERY_CONNECT_PHASE_WISE_RELEASE_DESCRIPTION",
-                                     description: "Phase-based release description. (Max 500 characters)",
-                                     optional: true,
-                                     type: String),
+                                       env_name: "HUAWEI_APPGALLERY_CONNECT_PHASE_RELEASE_DESCRIPTION",
+                                       description: "Phase release description",
+                                       optional: true,
+                                       type: String),
 
           FastlaneCore::ConfigItem.new(key: :release_time,
                                        env_name: "HUAWEI_APPGALLERY_CONNECT_RELEASE_TIME",
-                                       description: "Release time in UTC format for app release on a specific date. The format is yyyy-MM-dd'T'HH:mm:ssZZ)",
+                                       description: "Release time in UTC format for app release on a specific date (yyyy-MM-dd'T'HH:mm:ssZZ)",
                                        optional: true,
                                        conflicting_options: [:phase_wise_release],
                                        type: String),
@@ -163,11 +160,44 @@ module Fastlane
                                        optional: true,
                                        type: Integer),
 
-           FastlaneCore::ConfigItem.new(key: :package_ids,
-                                                  env_name: "HUAWEI_APPGALLERY_PACKAGE_IDS",
-                                                  description: "App Package IDs separated by commas",
-                                                  optional: true,
-                                                  type: String)
+          FastlaneCore::ConfigItem.new(key: :package_ids,
+                                     env_name: "HUAWEI_APPGALLERY_PACKAGE_IDS",
+                                     description: "App Package IDs separated by commas",
+                                     optional: true,
+                                     type: String),
+
+          # Open Testing Configuration
+          FastlaneCore::ConfigItem.new(key: :use_testing_version,
+                                     env_name: "HUAWEI_APPGALLERY_USE_TESTING_VERSION",
+                                     description: "Enable open testing for the app",
+                                     optional: true,
+                                     default_value: false,
+                                     type: Boolean),
+
+          FastlaneCore::ConfigItem.new(key: :skip_manual_review,
+                                     env_name: "HUAWEI_APPGALLERY_SKIP_MANUAL_REVIEW",
+                                     description: "Skip manual review for internal testing",
+                                     optional: true,
+                                     default_value: true,
+                                     type: Boolean),
+
+          FastlaneCore::ConfigItem.new(key: :test_start_time,
+                                     env_name: "HUAWEI_APPGALLERY_TEST_START_TIME",
+                                     description: "Test start time in UTC format (yyyy-MM-dd'T'HH:mm:ssZZ). If not provided, defaults to 1 hour from now",
+                                     optional: true,
+                                     type: String),
+
+          FastlaneCore::ConfigItem.new(key: :test_end_time,
+                                     env_name: "HUAWEI_APPGALLERY_TEST_END_TIME",
+                                     description: "Test end time in UTC format (yyyy-MM-dd'T'HH:mm:ssZZ). If not provided, defaults to 80 days from start time",
+                                     optional: true,
+                                     type: String),
+
+          FastlaneCore::ConfigItem.new(key: :feedback_email,
+                                     env_name: "HUAWEI_APPGALLERY_FEEDBACK_EMAIL",
+                                     description: "Email address for test feedback",
+                                     optional: true,
+                                     type: String)
         ]
       end
 
