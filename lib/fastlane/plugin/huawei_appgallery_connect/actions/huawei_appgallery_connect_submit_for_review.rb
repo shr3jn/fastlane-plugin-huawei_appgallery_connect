@@ -94,7 +94,14 @@ module Fastlane
                                          env_name: "HUAWEI_APPGALLERY_CONNECT_CHANGELOG_PATH",
                                          description: "Path to Changelog file (Default empty)",
                                          optional: true,
-                                         type: String)
+                                         type: String),
+
+            FastlaneCore::ConfigItem.new(key: :use_testing_version,
+                                      env_name: "HUAWEI_APPGALLERY_USE_TESTING_VERSION",
+                                      description: "Enable open testing for the app",
+                                      optional: true,
+                                      default_value: false,
+                                      type: Boolean),
         ]
       end
 
