@@ -1,6 +1,7 @@
 require 'fastlane_core/ui/ui'
 require 'cgi'
 require 'time'
+require 'digest'
 
 module Fastlane
   UI = FastlaneCore::UI unless Fastlane.const_defined?("UI")
@@ -220,6 +221,53 @@ module Fastlane
             return responseData
           end
         end
+      end
+
+      # Uploads a visual asset (icon, screenshot, video, or PDF) to AGC.
+      # Huawei uses the same OBS upload flow for all supported file formats;
+      # callers provide the fileType used by their Publishing API account.
+      def self.upload_asset(token, client_id, app_id, asset_path, file_type: 5, lang: nil)
+        UI.message("Uploading AppGallery asset #{File.basename(asset_path)}")
+        UI.user_error!("Asset does not exist: #{asset_path}") unless File.file?(asset_path)
+
+        filename = File.basename(asset_path)
+        suffix = File.extname(filename).delete('.').downcase
+        size = File.size(asset_path)
+        query = URI.encode_www_form(appId: app_id, fileName: filename,
+                                    contentLength: size, suffix: suffix)
+        uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/upload-url/for-obs?#{query}")
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
+        request = Net::HTTP::Get.new(uri.request_uri)
+        request['client_id'] = client_id
+        request['Authorization'] = "Bearer #{token}"
+        response = http.request(request)
+        UI.user_error!("Cannot obtain asset upload URL (status code: #{response.code})") unless response.is_a?(Net::HTTPSuccess)
+
+        upload_info = JSON.parse(response.body).fetch('urlInfo')
+        upload_uri = URI.parse(upload_info.fetch('url'))
+        upload_http = Net::HTTP.new(upload_uri.host, upload_uri.port)
+        upload_http.use_ssl = true
+        upload_request = Net::HTTP::Put.new(upload_uri)
+        upload_info.fetch('headers').each { |key, value| upload_request[key] = value }
+        upload_request.body = File.binread(asset_path)
+        upload_response = upload_http.request(upload_request)
+        UI.user_error!("Cannot upload asset (status code: #{upload_response.code})") unless upload_response.is_a?(Net::HTTPSuccess)
+
+        info_uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v2/app-file-info?appId=#{CGI.escape(app_id.to_s)}")
+        info_http = Net::HTTP.new(info_uri.host, info_uri.port)
+        info_http.use_ssl = true
+        info_request = Net::HTTP::Put.new(info_uri.request_uri)
+        info_request['client_id'] = client_id
+        info_request['Authorization'] = "Bearer #{token}"
+        info_request['Content-Type'] = 'application/json'
+        file = { fileName: filename, fileDestUrl: upload_info.fetch('objectId'), size: size }
+        payload = { fileType: file_type, files: [file] }
+        payload[:lang] = lang if lang
+        info_request.body = payload.to_json
+        info_response = info_http.request(info_request)
+        UI.user_error!("Cannot save asset information (status code: #{info_response.code})") unless info_response.is_a?(Net::HTTPSuccess)
+        JSON.parse(info_response.body)
       end
 
       def self.query_aab_compilation_status(token,params, pkgVersion)
