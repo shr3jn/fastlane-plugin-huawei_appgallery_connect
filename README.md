@@ -12,6 +12,27 @@ fastlane add_plugin huawei_appgallery_connect
 
 ## About huawei_appgallery_connect
 
+### Uploading icons and screenshots
+
+Visual assets can be uploaded independently of an app package with the
+`huawei_appgallery_connect_upload_assets` action. Pass one or more files (or
+directories) and the language used by the asset metadata:
+
+```ruby
+huawei_appgallery_connect_upload_assets(
+  client_id: ENV['HUAWEI_CLIENT_ID'],
+  client_secret: ENV['HUAWEI_CLIENT_SECRET'],
+  app_id: ENV['HUAWEI_APP_ID'],
+  asset_paths: ['fastlane/assets/icon.png', 'fastlane/assets/screenshots'],
+  lang: 'en-US'
+)
+```
+
+The action uses Huawei's Publishing API OBS upload flow and supports the
+formats accepted by Huawei (PNG/JPG screenshots and icons, plus video/PDF
+assets). `file_type` can be supplied when Huawei assigns a different file
+type for an asset in your account.
+
 Huawei AppGallery Connect Plugin can be used to upload Android application on the Huawei App Gallery using fastlane.
 
 ## Usage
