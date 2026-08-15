@@ -96,6 +96,16 @@ huawei_appgallery_connect_submit_for_review(
 )
 ```
 
+If a version is already under review and must be edited or replaced, withdraw it first:
+
+```ruby
+huawei_appgallery_connect_withdraw_review(
+    client_id: "<CLIENT_ID>",
+    client_secret: "<CLIENT_SECRET>",
+    app_id: "<APP_ID>"
+)
+```
+
 You can also retrieve app info by making use of the following action
 
 ```ruby
@@ -174,4 +184,3 @@ For more information about how the `fastlane` plugin system works, check out the
 ## About _fastlane_
 
 _fastlane_ is the easiest way to automate beta deployments and releases for your iOS and Android apps. To learn more, check out [fastlane.tools](https://fastlane.tools).
-

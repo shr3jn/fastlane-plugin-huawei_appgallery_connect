@@ -337,6 +337,36 @@ module Fastlane
         end
       end
 
+      def self.withdraw_app_review(token, client_id, app_id)
+        UI.important("Withdrawing app review")
+
+        uri = URI.parse("https://connect-api.cloud.huawei.com/api/publish/v1/app-info/withdraw?appId=#{CGI.escape(app_id)}")
+
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
+        request = Net::HTTP::Post.new(uri.request_uri)
+        request["client_id"] = client_id
+        request["Authorization"] = "Bearer #{token}"
+        request["Content-Type"] = "application/json"
+
+        response = http.request(request)
+
+        unless response.kind_of? Net::HTTPSuccess
+          UI.user_error!("Cannot withdraw app review (status code: #{response.code}, body: #{response.body})")
+          return false
+        end
+
+        result_json = JSON.parse(response.body)
+
+        if result_json['ret']['code'] == 0
+          UI.success("Successfully withdrew app review")
+          true
+        else
+          UI.user_error!(result_json)
+          false
+        end
+      end
+
       def self.prepare_test_config(params)
         # Calculate test start time (1 hour from now if not provided)
         start_time = if params[:test_start_time]
