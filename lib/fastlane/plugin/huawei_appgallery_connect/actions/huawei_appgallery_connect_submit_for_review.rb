@@ -92,7 +92,7 @@ module Fastlane
           
             FastlaneCore::ConfigItem.new(key: :changelog_path,
                                          env_name: "HUAWEI_APPGALLERY_CONNECT_CHANGELOG_PATH",
-                                         description: "Path to Changelog file (Default empty)",
+                                         description: "Path to changelog file (10-300 characters, default empty)",
                                          optional: true,
                                          type: String),
 
